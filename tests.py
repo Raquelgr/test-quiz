@@ -119,3 +119,25 @@ def test_correct_selected_choices_with_no_correct_answer():
 
     result = question.correct_selected_choices([choice_a.id])
     assert result == []
+
+@pytest.fixture
+def multiple_choice_question():
+    """Questão com 4 alternativas, sendo duas corretas (max_selections=2)."""
+    question = Question(title='Quais são matérias do curso de Sistemas de Informação na UFMG?', points=5, max_selections=2)
+    question.add_choice('ALC')   # id 1 - correta
+    question.add_choice('Econometria I')     # id 2 - incorreta
+    question.add_choice('Sistemas Operacionais')     # id 3 - correta
+    question.add_choice('Desenho Técnico')      # id 4 - incorreta
+    question.set_correct_choices([1, 3])
+    return question
+
+def test_question_has_expected_number_of_choices(multiple_choice_question):
+    assert len(multiple_choice_question.choices) == 4
+
+def test_selecting_only_correct_choices(multiple_choice_question):
+    result = multiple_choice_question.correct_selected_choices([1, 3])
+    assert result == [1, 3]
+
+def test_selecting_correct_choice_and_incorrect_choice(multiple_choice_question):
+    result = multiple_choice_question.correct_selected_choices([1, 2])
+    assert result == [1]
